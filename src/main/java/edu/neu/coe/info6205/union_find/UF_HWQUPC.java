@@ -8,6 +8,7 @@
 package edu.neu.coe.info6205.union_find;
 
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * Height-weighted Quick Union with Path Compression
@@ -82,6 +83,11 @@ public class UF_HWQUPC implements UF {
         validate(p);
         int root = p;
         // TO BE IMPLEMENTED
+        while (root != parent[root]){
+            if (pathCompression) doPathCompression(root);
+            root = parent[root];
+        }
+
         return root;
     }
 
@@ -169,6 +175,14 @@ public class UF_HWQUPC implements UF {
 
     private void mergeComponents(int i, int j) {
         // TO BE IMPLEMENTED make shorter root point to taller one
+        if (i == j) return;
+        if (height[i] < height[j]){
+            updateParent(i,j);
+            updateHeight(j,i);
+        }else {
+            updateParent(j,i);
+            updateHeight(i,j);
+        }
     }
 
     /**
@@ -176,5 +190,33 @@ public class UF_HWQUPC implements UF {
      */
     private void doPathCompression(int i) {
         // TO BE IMPLEMENTED update parent to value of grandparent
+        updateParent(i,getParent(getParent(i)));
+    }
+
+    public static int count(int n) {
+        UF uf = new UF_HWQUPC(n);
+        Random rand = new Random();
+        int connections = 0;
+        while (uf.components() != 1) {
+            uf.connect(rand.nextInt(n),rand.nextInt(n));
+            connections++;
+        }
+        return connections;
+    }
+
+    public static void main(String[] args) {
+        System.out.printf("%-12s %-12s %-12s\n","n","count","1/(1-c*lg(*)n)");
+        System.out.println("===========================================");
+        double sumc = 0;
+        int flag = 0;
+        for (int n = 500; n < 100000; n += 500) {
+            int connections = UF_HWQUPC.count(n);
+            System.out.printf("%-12d %-12d %-12f\n",n,connections,(double) connections/(double) n);
+            sumc += (double) connections/(double) n;
+            flag++;
+            //System.out.println(((double) connections/(double) n));
+        }
+        double avec = sumc/flag;
+        System.out.println("\nAverage k is "+avec + "\nm="+ avec+ "n");
     }
 }
