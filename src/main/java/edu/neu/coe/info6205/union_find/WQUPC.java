@@ -3,13 +3,19 @@
  */
 package edu.neu.coe.info6205.union_find;
 
+import edu.neu.coe.info6205.util.LazyLogger;
+
+import java.util.Random;
+import java.util.function.Consumer;
+
 /**
  * Weighted Quick Union with Path Compression
  */
-public class WQUPC {
+public class WQUPC implements Consumer<Integer> {
     private final int[] parent;   // parent[i] = parent of i
     private final int[] size;   // size[i] = size of subtree rooted at i
     private int count;  // number of components
+    final static LazyLogger logger = new LazyLogger(WQUPC.class);
 
     /**
      * Initializes an empty union–find data structure with {@code n} sites
@@ -55,6 +61,7 @@ public class WQUPC {
         validate(p);
         int root = p;
         while (root != parent[root]) {
+            //parent[root] = parent[parent[root]]; //do two loops
             root = parent[root];
         }
         while (p != root) {
@@ -104,11 +111,43 @@ public class WQUPC {
         if (size[rootP] < size[rootQ]) {
             parent[rootP] = rootQ;
             size[rootQ] += size[rootP];
+
+/*            if (q != rootQ){
+                size[rootQ]++;
+            }*/
+
         } else {
             parent[rootQ] = rootP;
             size[rootP] += size[rootQ];
+
+/*            if (p !=rootP || size[rootP] ==1){
+                size[rootP]++;
+            }*/
         }
         count--;
     }
 
+    public static int count(int n) {
+
+        WQUPC uf_client = new WQUPC(n);
+        Random random_num = new Random();
+        int num_connections = 0;
+
+        while(uf_client.count() > 1) {
+            int num1 = random_num.nextInt(n);
+            int num2 = random_num.nextInt(n);
+            num_connections++;
+            if(!uf_client.connected(num1, num2)) {
+                uf_client.union(num1, num2);
+            }
+
+        }
+
+        return num_connections;
+    }
+
+    @Override
+    public void accept(Integer integer) {
+        count(integer);
+    }
 }

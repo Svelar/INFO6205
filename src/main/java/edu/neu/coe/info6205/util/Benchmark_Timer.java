@@ -4,6 +4,10 @@
 
 package edu.neu.coe.info6205.util;
 
+import edu.neu.coe.info6205.union_find.UF_HWQUPC;
+import edu.neu.coe.info6205.union_find.WQUPC;
+
+import java.text.DecimalFormat;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -125,4 +129,18 @@ public class Benchmark_Timer<T> implements Benchmark<T> {
     private final Consumer<T> fPost;
 
     final static LazyLogger logger = new LazyLogger(Benchmark_Timer.class);
+
+    public static void main(String args[]) {
+        String description = "Benchmarking";
+        WQUPC uf_client = new WQUPC(1);
+        //UF_HWQUPC huf_client = new UF_HWQUPC(1);
+        Benchmark_Timer<Integer> timer = new Benchmark_Timer<Integer>(description, uf_client);
+        DecimalFormat format = new DecimalFormat("0.0000");
+        for (int n = 100000; n <= 12500000; n *= 5) {
+            logger.info("Number of sites: " + n);
+            double time = timer.run(n, 5);
+            logger.info("Average time to sort: " + format.format(time) + " milliseconds\n");
+        }
+    }
+
 }

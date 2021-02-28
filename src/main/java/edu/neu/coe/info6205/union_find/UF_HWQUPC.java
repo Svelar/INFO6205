@@ -9,11 +9,12 @@ package edu.neu.coe.info6205.union_find;
 
 import java.util.Arrays;
 import java.util.Random;
+import java.util.function.Consumer;
 
 /**
  * Height-weighted Quick Union with Path Compression
  */
-public class UF_HWQUPC implements UF {
+public class UF_HWQUPC implements UF, Consumer<Integer> {
     /**
      * Ensure that site p is connected to site q,
      *
@@ -218,5 +219,10 @@ public class UF_HWQUPC implements UF {
         }
         double avec = sumc/flag;
         System.out.println("\nAverage k is "+avec + "\nm="+ avec+ "n");
+    }
+
+    @Override
+    public void accept(Integer integer) {
+        count(integer);
     }
 }
